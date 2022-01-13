@@ -21,29 +21,24 @@
 </template>
 
 <script>
-import Pill from './Pill.vue'
+import { ipcRenderer } from 'electron';
+import Pill from './Pill.vue';
 
 export default {
     components: { Pill },
     data: function () {
         return {
             files: [],
-            grupedWords: [
-                {name: 'you', amount: 900},
-                {name: 'he', amount: 853},
-                {name: 'i', amount: 123},
-                {name: 'you1', amount: 900},
-                {name: 'he1', amount: 853},
-                {name: '1i', amount: 123},
-                {name: 'you2', amount: 900},
-                {name: 'he2', amount: 853},
-                {name: 'i2', amount: 123}
-            ]
+            grupedWords: []
         }
     },
     methods: {
       processSubtitles() {
-        console.log(this.files);
+        const paths = this.files.map(f => f.path)
+        ipcRenderer.send('process-subtitles', paths);
+        ipcRenderer.on('process-subtitles', (event, resp) => {
+          this.grupedWords = resp
+        });
       }
     }
 }
